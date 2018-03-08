@@ -19,10 +19,12 @@ package svcat
 import (
 	"fmt"
 
+	"github.com/kubernetes-incubator/service-catalog/cmd/svcat/plugin"
 	"github.com/kubernetes-incubator/service-catalog/pkg/client/clientset_generated/clientset"
 	"github.com/kubernetes-incubator/service-catalog/pkg/svcat/kube"
 	"github.com/kubernetes-incubator/service-catalog/pkg/svcat/service-catalog"
 	"k8s.io/client-go/rest"
+	"k8s.io/kubectl/pkg/pluginutils"
 )
 
 // App is the underlying application behind the svcat cli.
@@ -49,9 +51,18 @@ func NewApp(kubeConfig, kubeContext string) (*App, error) {
 
 // configForContext creates a Kubernetes REST client configuration for a given kubeconfig context.
 func configForContext(kubeConfig, kubeContext string) (*rest.Config, error) {
-	config, err := kube.GetConfig(kubeContext, kubeConfig).ClientConfig()
-	if err != nil {
-		return nil, fmt.Errorf("could not get Kubernetes config for context %q: %s", kubeContext, err)
+	var config *rest.Config
+	var err r
+	if plugin.IsPlugin() {
+		config, err = pluginutils.InitConfig()
+		if err != nil {
+			return nil, fmt.Errorf("could not get Kubernetes config from plugin framework: %s", err)
+		}
+	} else {
+		config, err = kube.GetConfig(kubeContext, kubeConfig).ClientConfig()
+		if err != nil {
+			return nil, fmt.Errorf("could not get Kubernetes config for context %q: %s", kubeContext, err)
+		}
 	}
 	return config, nil
 }
