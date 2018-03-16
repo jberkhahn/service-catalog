@@ -482,6 +482,7 @@ func (c *controller) reconcileServiceInstanceUpdate(instance *v1beta1.ServiceIns
 		return c.processServiceInstanceOperationError(instance, readyCond)
 	}
 
+	instance.Status.DashboardURL = response.DashboardURL
 	if response.Async {
 		return c.processUpdateServiceInstanceAsyncResponse(instance, response)
 	}
