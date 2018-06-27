@@ -24,8 +24,8 @@ import (
 
 // App is the underlying application behind the svcat cli.
 type App struct {
-	*servicecatalog.SDK
-
+	//*servicecatalog.SDK
+	servicecatalog.SvcatAPI
 	// CurrentNamespace is the namespace set in the current context.
 	CurrentNamespace string
 }
@@ -33,7 +33,7 @@ type App struct {
 // NewApp creates an svcat application.
 func NewApp(k8sClient k8sclient.Interface, svcatClient svcatclient.Interface, ns string) (*App, error) {
 	app := &App{
-		SDK: &servicecatalog.SDK{
+		SvcatAPI: &servicecatalog.SDK{
 			K8sClient:            k8sClient,
 			ServiceCatalogClient: svcatClient,
 		},
