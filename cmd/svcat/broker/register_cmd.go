@@ -57,10 +57,10 @@ func NewRegisterCmd(cxt *command.Context) *cobra.Command {
 		Waitable:   command.NewWaitable(),
 	}
 	cmd := &cobra.Command{
-		Use:   "register NAME --url URL",
+		Use:   "register NAME URL",
 		Short: "Registers a new broker with service catalog",
 		Example: command.NormalizeExamples(`
-		svcat register mysqlbroker --url http://mysqlbroker.com
+		svcat register mysqlbroker http://mysqlbroker.com
 		`),
 		PreRunE: command.PreRunE(registerCmd),
 		RunE:    command.RunE(registerCmd),
@@ -96,6 +96,7 @@ func (c *RegisterCmd) Validate(args []string) error {
 		return fmt.Errorf("a broker name is required")
 	}
 	c.BrokerName = args[0]
+	c.URL = args[1]
 
 	if c.BasicSecret != "" && c.BearerSecret != "" {
 		return fmt.Errorf("cannot use both basic auth and bearer auth")

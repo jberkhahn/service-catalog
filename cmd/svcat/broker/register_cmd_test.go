@@ -40,9 +40,9 @@ var _ = Describe("Register Command", func() {
 			cxt := &command.Context{}
 			cmd := NewRegisterCmd(cxt)
 			Expect(*cmd).NotTo(BeNil())
-			Expect(cmd.Use).To(Equal("register NAME --url URL"))
+			Expect(cmd.Use).To(Equal("register NAME URL"))
 			Expect(cmd.Short).To(ContainSubstring("Registers a new broker with service catalog"))
-			Expect(cmd.Example).To(ContainSubstring("svcat register mysqlbroker --url http://mysqlbroker.com"))
+			Expect(cmd.Example).To(ContainSubstring("svcat register mysqlbroker http://mysqlbroker.com"))
 			Expect(len(cmd.Aliases)).To(Equal(0))
 
 			urlFlag := cmd.Flags().Lookup("url")
