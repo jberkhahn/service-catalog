@@ -308,25 +308,15 @@ tree:
   - name: ca
     desc: A file containing the CA certificate to connect to the broker
   - name: class-restrictions
-<<<<<<< HEAD
     desc: A list of restrictions to apply to the classes allowed from the broker
-=======
-    desc: A whitelist of Classes to allow from the broker
->>>>>>> Add flags to svcat register command
   - name: interval
     desc: 'Poll interval for --wait, specified in human readable format: 30s, 1m,
       1h'
   - name: plan-restrictions
-<<<<<<< HEAD
     desc: A list of restrictions to apply to the plans allowed from the broker
   - name: relist-behavior
     desc: Behavior for relisting the broker's catalog. Valid options are manual or
       duration. Defaults to duration with an interval of 15m.
-=======
-    desc: A whitelist of Plans to allow from the broker
-  - name: relist-behavior
-    desc: Behavior for relisting the broker's catalogue. Manual/Duration
->>>>>>> Add flags to svcat register command
   - name: relist-duration
     desc: 'Interval to refetch broker catalog when relist-behavior is set to duration,
       specified in human readable format: 30s, 1m, 1h'
@@ -336,11 +326,8 @@ tree:
   - name: timeout
     desc: 'Timeout for --wait, specified in human readable format: 30s, 1m, 1h. Specify
       -1 to wait indefinitely.'
-<<<<<<< HEAD
   - name: url
     desc: The broker URL (Required)
-=======
->>>>>>> Add flags to svcat register command
   - name: wait
     desc: Wait until the operation completes.
 - name: sync

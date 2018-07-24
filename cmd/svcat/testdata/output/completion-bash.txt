@@ -848,12 +848,9 @@ _svcat_register()
     local_nonpersistent_flags+=("--class-restrictions=")
     flags+=("--interval=")
     local_nonpersistent_flags+=("--interval=")
-<<<<<<< HEAD
     flags+=("--namespace=")
     two_word_flags+=("-n")
     local_nonpersistent_flags+=("--namespace=")
-=======
->>>>>>> Add flags to svcat register command
     flags+=("--plan-restrictions=")
     local_nonpersistent_flags+=("--plan-restrictions=")
     flags+=("--relist-behavior=")
@@ -864,11 +861,8 @@ _svcat_register()
     local_nonpersistent_flags+=("--skip-tls")
     flags+=("--timeout=")
     local_nonpersistent_flags+=("--timeout=")
-<<<<<<< HEAD
     flags+=("--url=")
     local_nonpersistent_flags+=("--url=")
-=======
->>>>>>> Add flags to svcat register command
     flags+=("--wait")
     local_nonpersistent_flags+=("--wait")
     flags+=("--context=")
@@ -878,6 +872,7 @@ _svcat_register()
     two_word_flags+=("-v")
 
     must_have_one_flag=()
+    must_have_one_flag+=("--url=")
     must_have_one_noun=()
     noun_aliases=()
 }
