@@ -50,6 +50,7 @@ func TestCreateServiceInstanceNonExistentClusterServiceClassOrPlan(t *testing.T)
 		classK8sName        string
 		planK8sName         string
 		expectedErrorReason string
+		userProvided        bool
 	}{
 		{
 			name:                "existent external class and plan name",
@@ -123,6 +124,11 @@ func TestCreateServiceInstanceNonExistentClusterServiceClassOrPlan(t *testing.T)
 			planK8sName:         "nothereplan",
 			expectedErrorReason: "ReferencesNonexistentServiceClass",
 		},
+		{
+			name:                "user provided service",
+			userProvided:        true,
+			expectedErrorReason: "",
+		},
 	}
 	for _, tc := range cases {
 		tc := tc
@@ -138,6 +144,7 @@ func TestCreateServiceInstanceNonExistentClusterServiceClassOrPlan(t *testing.T)
 					i.Spec.PlanReference.ClusterServicePlanExternalID = tc.planExternalID
 					i.Spec.PlanReference.ClusterServiceClassName = tc.classK8sName
 					i.Spec.PlanReference.ClusterServicePlanName = tc.planK8sName
+					i.Spec.UserProvided = tc.userProvided
 					return i
 				}(),
 				skipVerifyingInstanceSuccess: tc.expectedErrorReason != "",
