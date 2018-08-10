@@ -19,7 +19,9 @@ items:
     externalID: 7e2c42f3-6d94-4409-bb15-7610d60af544
     parameters: {}
     updateRequests: 0
+    userProvided: false
   status:
+    UserProvided: false
     asyncOpInProgress: false
     conditions:
     - lastTransitionTime: 2018-01-11T20:59:47Z
