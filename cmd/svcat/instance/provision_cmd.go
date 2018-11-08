@@ -26,24 +26,24 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type provisonCmd struct {
+type ProvisionCmd struct {
 	*command.Namespaced
 	*command.Waitable
 
-	instanceName string
-	externalID   string
-	className    string
-	planName     string
-	rawParams    []string
-	jsonParams   string
-	params       interface{}
-	rawSecrets   []string
-	secrets      map[string]string
+	InstanceName string
+	ExternalID   string
+	ClassName    string
+	PlanName     string
+	RawParams    []string
+	JsonParams   string
+	Params       interface{}
+	RawSecrets   []string
+	Secrets      map[string]string
 }
 
 // NewProvisionCmd builds a "svcat provision" command
 func NewProvisionCmd(cxt *command.Context) *cobra.Command {
-	provisionCmd := &provisonCmd{
+	provisionCmd := &ProvisionCmd{
 		Namespaced: command.NewNamespaced(cxt),
 		Waitable:   command.NewWaitable(),
 	}
@@ -68,51 +68,51 @@ func NewProvisionCmd(cxt *command.Context) *cobra.Command {
 		PreRunE: command.PreRunE(provisionCmd),
 		RunE:    command.RunE(provisionCmd),
 	}
-	provisionCmd.AddNamespaceFlags(cmd.Flags(), false)
-	cmd.Flags().StringVar(&provisionCmd.externalID, "external-id", "",
-		"The ID of the instance for use with the OSB SB API (Optional)")
-	cmd.Flags().StringVar(&provisionCmd.className, "class", "",
-		"The class name (Required)")
-	cmd.MarkFlagRequired("class")
-	cmd.Flags().StringVar(&provisionCmd.planName, "plan", "",
+	cmd.Flags().StringVar(&provisionCmd.PlanName, "plan", "",
 		"The plan name (Required)")
 	cmd.MarkFlagRequired("plan")
-	cmd.Flags().StringSliceVarP(&provisionCmd.rawParams, "param", "p", nil,
+	cmd.Flags().StringVar(&provisionCmd.ClassName, "class", "",
+		"The class name (Required)")
+	cmd.MarkFlagRequired("class")
+	cmd.Flags().StringVar(&provisionCmd.ExternalID, "external-id", "",
+		"The ID of the instance for use with the OSB SB API (Optional)")
+	cmd.Flags().StringSliceVarP(&provisionCmd.RawParams, "param", "p", nil,
 		"Additional parameter to use when provisioning the service, format: NAME=VALUE. Cannot be combined with --params-json, Sensitive information should be placed in a secret and specified with --secret")
-	cmd.Flags().StringSliceVarP(&provisionCmd.rawSecrets, "secret", "s", nil,
+	cmd.Flags().StringSliceVarP(&provisionCmd.RawSecrets, "secret", "s", nil,
 		"Additional parameter, whose value is stored in a secret, to use when provisioning the service, format: SECRET[KEY]")
-	cmd.Flags().StringVar(&provisionCmd.jsonParams, "params-json", "",
+	cmd.Flags().StringVar(&provisionCmd.JsonParams, "params-json", "",
 		"Additional parameters to use when provisioning the service, provided as a JSON object. Cannot be combined with --param")
+	provisionCmd.AddNamespaceFlags(cmd.Flags(), false)
 	provisionCmd.AddWaitFlags(cmd)
 
 	return cmd
 }
 
-func (c *provisonCmd) Validate(args []string) error {
+func (c *ProvisionCmd) Validate(args []string) error {
 	if len(args) == 0 {
 		return fmt.Errorf("an instance name is required")
 	}
-	c.instanceName = args[0]
+	c.InstanceName = args[0]
 
 	var err error
 
-	if c.jsonParams != "" && len(c.rawParams) > 0 {
+	if c.JsonParams != "" && len(c.RawParams) > 0 {
 		return fmt.Errorf("--params-json cannot be used with --param")
 	}
 
-	if c.jsonParams != "" {
-		c.params, err = parameters.ParseVariableJSON(c.jsonParams)
+	if c.JsonParams != "" {
+		c.Params, err = parameters.ParseVariableJSON(c.JsonParams)
 		if err != nil {
 			return fmt.Errorf("invalid --params-json value (%s)", err)
 		}
 	} else {
-		c.params, err = parameters.ParseVariableAssignments(c.rawParams)
+		c.Params, err = parameters.ParseVariableAssignments(c.RawParams)
 		if err != nil {
 			return fmt.Errorf("invalid --param value (%s)", err)
 		}
 	}
 
-	c.secrets, err = parameters.ParseKeyMaps(c.rawSecrets)
+	c.Secrets, err = parameters.ParseKeyMaps(c.RawSecrets)
 	if err != nil {
 		return fmt.Errorf("invalid --secret value (%s)", err)
 	}
@@ -120,18 +120,18 @@ func (c *provisonCmd) Validate(args []string) error {
 	return nil
 }
 
-func (c *provisonCmd) Run() error {
+func (c *ProvisionCmd) Run() error {
 	return c.Provision()
 }
 
-func (c *provisonCmd) Provision() error {
+func (c *ProvisionCmd) Provision() error {
 	opts := &servicecatalog.ProvisionOptions{
-		ExternalID: c.externalID,
+		ExternalID: c.ExternalID,
 		Namespace:  c.Namespace,
-		Params:     c.params,
-		Secrets:    c.secrets,
+		Params:     c.Params,
+		Secrets:    c.Secrets,
 	}
-	instance, err := c.App.Provision(c.instanceName, c.className, c.planName, opts)
+	instance, err := c.App.Provision(c.InstanceName, c.ClassName, c.PlanName, opts)
 	if err != nil {
 		return err
 	}
