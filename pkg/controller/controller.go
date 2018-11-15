@@ -175,16 +175,7 @@ func NewController(
 			DeleteFunc: controller.servicePlanDelete,
 		})
 	}
-	controller.instanceOperationRetryQueue.instances = make(map[string]backoffEntry)
-	controller.instanceOperationRetryQueue.rateLimiter = workqueue.NewItemExponentialFailureRateLimiter(minBrokerOperationRetryDelay, maxBrokerOperationRetryDelay)
-
-	return controller, nil
-}
-
-// Controller describes a controller that backs the service catalog API for
-// Open Service Broker compliant Brokers.
-type Controller interface {
-	// Run runs the controller until the given stop channel can be read from.
+		// Run runs the controller until the given stop channel can be read from.
 	// workers specifies the number of goroutines, per resource, processing work
 	// from the resource workqueues
 	Run(workers int, stopCh <-chan struct{})
@@ -231,8 +222,7 @@ type controller struct {
 	// clusterIDLock protects access to clusterID between the
 	// monitor writing the value from the configmap, and any
 	// readers passing the clusterID to a broker.
-	clusterIDLock               sync.RWMutex
-	instanceOperationRetryQueue instanceOperationBackoff
+	clusterIDLock sync.RWMutex
 	// BrokerClientManager holds all OSB clients for brokers.
 	brokerClientManager *BrokerClientManager
 
@@ -272,10 +262,6 @@ func (c *controller) Run(workers int, stopCh <-chan struct{}) {
 	// simple polling based worker
 	c.createConfigMapMonitorWorker(stopCh, &waitGroup)
 
-	// create a task that runs periodically to purge expired
-	// instance operation retry entries
-	c.createPurgeExpiredRetryEntriesWorker(stopCh, &waitGroup)
-
 	<-stopCh
 	klog.Info("Shutting down service-catalog controller")
 
@@ -312,16 +298,6 @@ func (c *controller) createConfigMapMonitorWorker(stopCh <-chan struct{}, waitGr
 	waitGroup.Add(1)
 	go func() {
 		wait.Until(c.monitorConfigMap, 15*time.Second, stopCh)
-		waitGroup.Done()
-	}()
-}
-
-// createPurgeExpiredRetryEntriesWorker creates a task that runs periodically to
-// remove old entries from the instance retry queue
-func (c *controller) createPurgeExpiredRetryEntriesWorker(stopCh <-chan struct{}, waitGroup *sync.WaitGroup) {
-	waitGroup.Add(1)
-	go func() {
-		wait.Until(c.purgeExpiredRetryEntries, 2*maxBrokerOperationRetryDelay, stopCh)
 		waitGroup.Done()
 	}()
 }
